@@ -1,0 +1,42 @@
+
+#ifndef YOLOV3_DETECTOR_EXPORT_H
+#define YOLOV3_DETECTOR_EXPORT_H
+
+#ifdef YOLOV3_DETECTOR_STATIC_DEFINE
+#  define YOLOV3_DETECTOR_EXPORT
+#  define YOLOV3_DETECTOR_NO_EXPORT
+#else
+#  ifndef YOLOV3_DETECTOR_EXPORT
+#    ifdef yolov3_detector_EXPORTS
+        /* We are building this library */
+#      define YOLOV3_DETECTOR_EXPORT __declspec(dllexport)
+#    else
+        /* We are using this library */
+#      define YOLOV3_DETECTOR_EXPORT __declspec(dllimport)
+#    endif
+#  endif
+
+#  ifndef YOLOV3_DETECTOR_NO_EXPORT
+#    define YOLOV3_DETECTOR_NO_EXPORT 
+#  endif
+#endif
+
+#ifndef YOLOV3_DETECTOR_DEPRECATED
+#  define YOLOV3_DETECTOR_DEPRECATED __declspec(deprecated)
+#endif
+
+#ifndef YOLOV3_DETECTOR_DEPRECATED_EXPORT
+#  define YOLOV3_DETECTOR_DEPRECATED_EXPORT YOLOV3_DETECTOR_EXPORT YOLOV3_DETECTOR_DEPRECATED
+#endif
+
+#ifndef YOLOV3_DETECTOR_DEPRECATED_NO_EXPORT
+#  define YOLOV3_DETECTOR_DEPRECATED_NO_EXPORT YOLOV3_DETECTOR_NO_EXPORT YOLOV3_DETECTOR_DEPRECATED
+#endif
+
+#if 0 /* DEFINE_NO_DEPRECATED */
+#  ifndef YOLOV3_DETECTOR_NO_DEPRECATED
+#    define YOLOV3_DETECTOR_NO_DEPRECATED
+#  endif
+#endif
+
+#endif /* YOLOV3_DETECTOR_EXPORT_H */
