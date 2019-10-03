@@ -6,6 +6,9 @@
 #include "letterbox.h"
 #include <assert.h>
 namespace {
+	
+	//using namespace YoloV3;
+
 	// x, y, h, w
     void center_to_corner(torch::Tensor bbox) {
 		// top left x = centerX - w / 2 ...

@@ -76,3 +76,6 @@ dist
 # python
 __pycache__
 _ext
+build_win/
+.ionide/
+*.bbox.jpg

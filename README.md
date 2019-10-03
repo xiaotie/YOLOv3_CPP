@@ -12,6 +12,8 @@ Libtorch implementation of YOLOv3, which works on `Windows` and `Linux`.
 * Win10: vs2017+cuda90, vs2019+cuda10
 * Linux
 
+调用 cmake 之前，先修改 CMakeLists.txt 里的 Torch_DIR 和 OpenCV_DIR 等变量为本地对应路径.
+
 ## Usage
 
 For now, only support inference. Please use `Darknet` weights format as input.  
@@ -45,18 +47,11 @@ make # linux
 
 Only tested with CPU on Windows for now. 
 
-
 ## Features
 Supports  
 - NMS
 - Soft NMS
 - Weighted NMS
-
-## TODO
-- Support training
-- ...
-
-
 
 ## Credits
 

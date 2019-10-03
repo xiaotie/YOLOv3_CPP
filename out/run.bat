@@ -1,0 +1,1 @@
+yolov3.exe ../models/yolov3.cfg ../models/yolov3.weights ../images

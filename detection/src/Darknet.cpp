@@ -2,6 +2,7 @@
 #include "darknet_parsing.h"
 
 using namespace std;
+//using namespace YoloV3;
 
 struct EmptyLayerImpl : torch::nn::Module {
     EmptyLayerImpl() = default;
@@ -90,12 +91,12 @@ struct DetectionLayerImpl : torch::nn::Module {
         prediction.select(2, 0).sigmoid_().add_(grid[1].view({1, 1, 1, -1})).mul_(stride[1]); // *scale 
         prediction.select(2, 1).sigmoid_().add_(grid[0].view({1, 1, -1, 1})).mul_(stride[0]);
 
-		// -> bw= pw*e^tw, bh=ph*e^th，pw is the lenght of anchor box
+		// -> bw= pw*e^tw, bh=ph*e^th锛宲w is the lenght of anchor box
         prediction.select(2, 2).exp_().mul_(anchors.select(1, 0).view({1, -1, 1, 1}));
         prediction.select(2, 3).exp_().mul_(anchors.select(1, 1).view({1, -1, 1, 1}));
 
-		// contiguous：view only work on the contiguous variable.
-		// 如果在view之前用了transpose, permute等，需要用contiguous()来返回一个contiguous copy
+		// contiguous锛歷iew only work on the contiguous variable.
+		// 濡傛灉鍦╲iew涔嬪墠鐢ㄤ簡transpose, permute绛夛紝闇�瑕佺敤contiguous()鏉ヨ繑鍥炰竴涓猚ontiguous copy
 		// dim of returned tensor: (batch_size, grid_size*grid_size*num_anchors, bbox_attrs)
         return prediction.transpose(2, -1).contiguous().view({prediction.size(0), -1, prediction.size(2)});
     }

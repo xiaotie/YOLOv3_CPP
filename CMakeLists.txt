@@ -4,9 +4,9 @@ project(YOLOV3-app)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(Torch_DIR "D:/fzq/YOLOv3_CPP/libtorch120debug/share/cmake/Torch")
-set(OpenCV_DIR D:/workspace/opencv410/build)
-set(CMAKE_PREFIX_PATH "D:/fzq/YOLOv3_CPP/libtorch120debug")
+set(Torch_DIR "C:/Lib/libtorch1.1/share/cmake/Torch")
+set(OpenCV_DIR C:/Lib/opencv4.1.1/build)
+set(CMAKE_PREFIX_PATH "C:/Lib/libtorch1.1/")
 
 # set(OUTPUT_DIR "result")
 # set(TARGETS_DIR_NAME "targets")

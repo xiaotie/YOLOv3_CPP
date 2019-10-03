@@ -8,6 +8,9 @@
 
 #include "Detector.h"
 
+//namespace /*YoloV3*/
+//{
+
 struct Detector::Darknet : torch::nn::Module {
 public:
     explicit Darknet(const std::string &cfg_file);
@@ -27,5 +30,7 @@ private:
     std::vector<torch::nn::Sequential> module_list;
     void create_modules();
 };
+
+//}
 
 #endif //DARKNET_H

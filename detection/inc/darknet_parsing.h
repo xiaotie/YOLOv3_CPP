@@ -4,7 +4,10 @@
 #include <string>
 #include <map>
 #include <torch/torch.h>
-
+//
+//namespace /*YoloV3*/
+//{
+//
 int split(const std::string &str, std::vector<std::string> &ret_, std::string sep = ",");
 
 int split(const std::string &str, std::vector<int> &ret_, std::string sep = ",");
@@ -24,5 +27,7 @@ Blocks load_cfg(const std::string &cfg_file);
 
 void load_weights(const std::string &weight_file, const Blocks &blocks,
                   std::vector<torch::nn::Sequential> &module_list);
+
+//}
 
 #endif //DARKNET_PARSING_H

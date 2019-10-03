@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace {
+namespace /*YoloV3*/ {
     // trim from start (in place)
     void ltrim(string &s) {
         s.erase(s.begin(), find_if(s.begin(), s.end(), [](char ch) {
@@ -174,4 +174,3 @@ void load_weights(const string &weight_file, const Blocks &blocks, vector<torch:
         load_tensor(conv->weight, fs);
     }
 }
-
