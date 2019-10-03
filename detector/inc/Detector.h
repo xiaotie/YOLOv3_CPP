@@ -61,6 +61,7 @@ public:
     ~Detector();
 
 	std::vector<Detection> predict(cv::Mat image);
+	std::vector<Detection> predict(float* pImageData, int width, int height);
 
 private:
 	torch::DeviceType device_type;
@@ -73,11 +74,25 @@ private:
     static const float confidence_threshold;
 };
 
+extern "C" {
 
-YOLOV3_DETECTOR_EXPORT void* create_yolov3_model(const char* cfg_file_path, const char* weight_file_path);
+	/**
+	 * 加载 YoloV3 Model
+	 */
+	YOLOV3_DETECTOR_EXPORT void* load_yolov3_model(const char* cfg_file_path, const char* weight_file_path);
 
-YOLOV3_DETECTOR_EXPORT int detect_yolov3(const void* pModel, const void* pRgb, /*YoloV3::*/Detection* pResults, int maxResults);
+	/**
+	 * 采用 YoloV3 Model 进行目标检测。pModel 为加载的 YoloV3 Model。pRgbData 为每个 Channel 的类型为 float RGB 格式的图像的地址
+	 * pResults 为检测结果所放置的地方。maxResults 为所返回的最大目标数量。
+	 * 返回值：所得到的目标检测结果数量
+	 */
+	YOLOV3_DETECTOR_EXPORT int detect_yolov3(const void* pModel, float* pRgbData, /*YoloV3::*/Detection* pResults, int maxResults);
 
-YOLOV3_DETECTOR_EXPORT int release_yolov3_model(const void* pModel);
+	/**
+	 * 释放创建的 YoloV3 Model
+	 */
+	YOLOV3_DETECTOR_EXPORT int release_yolov3_model(const void* pModel);
+
+}
 
 #endif //DETECTOR_H

@@ -195,28 +195,16 @@ Detector::Detector(const std::array<int64_t, 2> &_inp_dim,
 
 Detector::~Detector() = default;
 
-std::vector<Detection> Detector::predict(cv::Mat image) {
+std::vector<Detection> Detector::predict(float* pImageData, int width, int height) {
 
-	//turn off ...
-    torch::NoGradGuard no_grad;
+	int64_t orig_dim[] = { height, width };
 
-    int64_t orig_dim[] = {image.rows, image.cols};
-	// adjust rows and cols, and pad 128 to blank region
-	// resize to model input dim
-    image = letterbox_img(image, inp_dim);  
-
-	// BGR2RGB: if models trained in RGB order. Be carefull
-    cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
-    image.convertTo(image, CV_32F);
-
-    //TODO: Batch Input
-	// TODO: normalization using IMAGENET stats ?
-	auto img_tensor = torch::from_blob(image.data, {1, inp_dim[0], inp_dim[1], 3})
-	        .permute({0, 3, 1, 2}).div_(255.0).to(device_type);
+	auto img_tensor = torch::from_blob(pImageData, { 1, inp_dim[0], inp_dim[1], 3 })
+		.permute({ 0, 3, 1, 2 }).div_(255.0).to(device_type);
 
 	// input tensor: [B, C, H, W]
 	// output tensor: (batch_size, grid_size*grid_size*num_anchors, bbox_attrs)
-    auto prediction = net->forward(img_tensor);
+	auto prediction = net->forward(img_tensor);
 
 	// collect detected objects
 	std::vector<Detection> dets;
@@ -224,10 +212,10 @@ std::vector<Detection> Detector::predict(cv::Mat image) {
 	//TODO: Batch inference
 	// for (auto &pred: prediction){}
 	prediction.squeeze_(0);
-    auto [bbox, scr, cls] = threshold_confidence(prediction, confidence_threshold);
-    
+	auto[bbox, scr, cls] = threshold_confidence(prediction, confidence_threshold);
+
 	// NO objects found!
-	if (bbox.numel()== 0) 
+	if (bbox.numel() == 0)
 		return dets;
 
 	// move data to cpu
@@ -252,14 +240,57 @@ std::vector<Detection> Detector::predict(cv::Mat image) {
 	for (int64_t i = 0; i < bbox_acc.size(0); ++i) {
 		// Rect2f <- [bx,by, bw, bh]
 		auto d = Detection{ cv::Rect2f(bbox_acc[i][0], bbox_acc[i][1], bbox_acc[i][2], bbox_acc[i][3]),
-							scr_acc[i], 
-			                cls_acc[i]
-		                  };
+							scr_acc[i],
+							cls_acc[i]
+		};
 		dets.emplace_back(d);
 	}
 	//softNMS(dets, NMS_threshold, 2, 0.5, 0.001);
 	NMS(dets, NMS_threshold);
 
-    return dets;
+	return dets;
+}
 
+std::vector<Detection> Detector::predict(cv::Mat image) {
+
+	//turn off ...
+    torch::NoGradGuard no_grad;
+
+    int64_t orig_dim[] = {image.rows, image.cols};
+	// adjust rows and cols, and pad 128 to blank region
+	// resize to model input dim
+    image = letterbox_img(image, inp_dim);  
+
+	// BGR2RGB: if models trained in RGB order. Be carefull
+    cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+    image.convertTo(image, CV_32F);
+
+	return predict((float*)image.data, inp_dim[1], inp_dim[0]);
+}
+
+void* load_yolov3_model(const char* cfg_file_path, const char* weight_file_path)
+{
+	std::array<int64_t, 2> inp_dim = { 416, 416 }; 	//model input image size (row, column)
+	Detector* detector = new Detector(inp_dim, cfg_file_path, weight_file_path);
+	return detector;
+}
+
+YOLOV3_DETECTOR_EXPORT int detect_yolov3(const void* pModel, float* pRgb, /*YoloV3::*/Detection* pResults, int maxResults)
+{
+	if (pModel == nullptr) return -1;
+	Detector* detector = (Detector*)pModel;
+	auto list = detector->predict(pRgb, 416, 416);
+	int count = maxResults;
+	if (count > list.size()) count = list.size();
+	for (int i = 0; i < count; i++) {
+		pResults[i] = list[i];
+	}
+	return count;
+}
+
+YOLOV3_DETECTOR_EXPORT int release_yolov3_model(const void* pModel)
+{
+	if (pModel == nullptr) return -1;
+	delete pModel;
+	return 0;
 }
